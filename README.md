@@ -69,8 +69,33 @@ export DISPLAY=:1
 ### Data Preperation
 
 - Follow the [docs](https://github.com/lixiny/ArtiBoost/blob/main/docs/Installation.md#Datasets) to prepare datasets for HO3D and DexYCB and download MANO assets, the datasets should be extracted into `main/data` and `main/assets`.
-- We provide cached DexYCB and HO3D index for train and test set indicating samples whose ground truth annotations are stable in our settings for MuJoCo, refer to `main/common`.
-- We provide MeshLab resampled YCB object [models](https://drive.google.com/drive/folders/1-yfIrPaqLfwJU-kpUfGDsuo9eQwEGp_h?usp=sharing) to train object metrics, download it and extracted to `main/data`. MuJoCo related data can be found in `MuJoCo_data`. 
+- We provide [cached](https://drive.google.com/drive/folders/1-yfIrPaqLfwJU-kpUfGDsuo9eQwEGp_h?usp=sharing) DexYCB and HO3D index for train and test set indicating samples whose ground truth annotations are stable in our settings for MuJoCo, download and extract the folder into `main/common`.
+- We provide MeshLab resampled YCB object [models](https://drive.google.com/drive/folders/1-yfIrPaqLfwJU-kpUfGDsuo9eQwEGp_h?usp=sharing) to train object metrics, download it and extracted to `main/data`. MuJoCo related data can be found in `MuJoCo_data`.
+
+- Your `main` folder should have the structure as below:
+```
+    ├── data
+    │   ├── DexYCB
+    │   ├── HO3D
+    │   ├── models_resample_mashlab
+    |   ├── YCB_models_process
+    │   └── YCB_models_supp
+    ├── assets
+    │   ├── postprocess
+    │   ├── mano_v1_2
+    │   └── ... (download from ArtiBoost)
+    ├── checkpoints
+    │   ├── pretrained
+    │   |   ├── dexycb.pth.tar
+    |   |   └── ho3d.pth.tar
+    ├── common
+    |   ├── cache
+    │   |   ├── DexYCB
+    |   |   └── HO3D
+    ├── thirdparty
+    │   ├── dex-ycb-toolkit
+    |   ...
+```
 
 ## Evaluation
 
