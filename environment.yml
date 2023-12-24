@@ -1,0 +1,16 @@
+name: deepsimHO
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - fvcore
+  - defaults
+dependencies:
+  - python=3.8.8
+  - pip==21.1.0
+  - setuptools==52.0.0
+  - cmake==3.18.4
+  - fvcore==0.1.5.post20220305
+  - ipython==7.22.0
+  - cython==0.29.22
+  - pyembree==0.1.6

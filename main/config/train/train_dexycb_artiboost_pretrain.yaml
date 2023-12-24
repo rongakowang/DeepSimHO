@@ -1,0 +1,121 @@
+DATASET:
+  TRAIN:
+    TYPE: DexYCB
+    DATA_SPLIT: train
+    DATA_ROOT: ./data
+    SPLIT_MODE: s0
+    USE_LEFT_HAND: false
+    FILTER_INVISIBLE_HAND: true
+    AUG: true
+
+    AUG_PARAM:
+      SCALE_JIT: 0.1
+      CENTER_JIT: 0.1
+      MAX_ROT: 0.0
+
+  TEST:
+    TYPE: DexYCB
+    DATA_SPLIT: test
+    DATA_ROOT: ./data
+    SPLIT_MODE: s0
+    USE_LEFT_HAND: false
+    FILTER_INVISIBLE_HAND: true
+    AUG: false
+    AUG_PARAM: ""
+
+DATA_PRESET:
+  PRESET_TYPE: ""
+  USE_CACHE: true
+  FILTER_NO_CONTACT: true
+  FILTER_THRESH: 50.0
+  BBOX_EXPAND_RATIO: 1.2
+  FULL_IMAGE: false
+  IMAGE_SIZE:
+    - 224
+    - 224
+  HEATMAP_SIZE:
+    - 28
+    - 28
+  HEATMAP_SIGMA: 2.0
+  CENTER_IDX: 9
+
+TRAIN:
+  BATCH_SIZE: 128
+  EPOCH: 100
+  OPTIMIZER: "adam"
+  LR: 0.00005
+  LR_FACTOR: 0.1
+  WEIGHT_DECAY: 0
+  LR_DECAY_STEP: 100
+  LR_DECAY_GAMMA: 1.0
+  # MANUAL_SEED: 1
+  MANUAL_SEED: 1234
+  GRAD_CLIP: 0.001
+  EVAL_FREQ: 5
+  VAL_START_EPOCH: 15
+
+ARCH:
+  TYPE: HybridBaseline
+  PRETRAINED: "checkpoints/artiboost_dexycb_clasbased_sym_100e.pth.tar"
+  MLP_ONLY: false
+  MLP_PRETRAIN: "exp/mlp/checkpoints/checkpoint_40/Arch.pth.tar" # change to /path/to/pretrained mlp
+  BACKBONE:
+    TYPE: ResNet34
+    PRETRAINED: true
+    FREEZE_BATCHNORM: false
+    
+  HYBRID_HEAD:
+    TYPE: IntegralDeconvHead
+    NCLASSES: 22
+    DECONV_WITH_BIAS: false
+    NORM_TYPE: "softmax"
+    INPUT_CHANNEL: 512
+    DEPTH_RESOLUTION: 28
+    NUM_DECONV_LAYERS: 2
+    NUM_DECONV_FILTERS:
+      - 256
+      - 256
+    NUM_DECONV_KERNELS:
+      - 4
+      - 4
+    FINAL_CONV_KERNEL: 1
+  BOX_HEAD:
+    TYPE: MLP_O
+    LAYERS_N: [512, 256, 128]
+    OUT_CHANNEL: 6
+  PREVIOUS: []
+
+LAMBDAS: [0.5, 0.2, 0.1]
+CRITERION:
+  - TYPE: JointsLoss
+    LAMBDA_JOINTS_3D: 1.0
+    LAMBDA_CORNERS_3D: 0.0
+  - TYPE: HandOrdLoss
+  - TYPE: SymCornerLoss
+    LAMBDA_SYM_CORNERS_3D: 1.0
+    MODEL_INFO_PATH: "./assets/extend_models_info.json"
+
+EVALUATOR:
+  - TYPE: LossesMetric
+    VIS_LOSS_KEYS: ['sym_corners_3d_loss']
+  - TYPE: Mean3DEPE
+    VAL_KEYS: [joints_3d_abs, hand_verts_3d_abs]
+    MILLIMETERS: true
+  - TYPE: MeshPhysicsMetric
+  - TYPE: DiscriminatorMetric
+
+PHYSICS:
+  SIM_STEP: 100
+  EPS: 0.0001
+  OBJ_QUAT: true # use quaternion and free joint
+
+PHYSICS_MLP:
+  OUT_DIM: 1
+  USE_BATCH_NORM: false
+  USE_DROPOUT: false
+  LAYER_ENCODER: [1024, 1024, 1024]
+  LAYER_DECODER: [1024, 512, 256, 128]
+  DISCRIMINATOR_THRESHOLD: 0.01
+  STABILITY_WEIGHT: 0.1
+  SR_THRESHOLD: 0.01
+  
